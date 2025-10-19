@@ -1,20 +1,51 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useRoutes } from "react-router-dom";
 import Login from "./pages/Login";
 import ProjectsList from "./pages/ProjectsList/ProjectsList";
 import ProjectDetails from "./pages/ProjectDetails";
+import { useContext } from "react";
+import { AuthContext } from "./context/AuthContext";
+import ProjectsLayout from "./layouts/ProjectsLayout";
+
+const PrivateRoute = ({ children }) => {
+  const { token } = useContext(AuthContext);
+  return token ? children : <Navigate to="/login" replace />;
+};
+
+const PublicRoute = ({ children }) => {
+  const { token } = useContext(AuthContext);
+  return token ? <Navigate to="/projects" replace /> : children;
+};
 
 function App() {
-  // ========== ToDo: Add Route Guards ==============
-  return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
+  const routes = [
+    {
+      path: "/login",
+      element: (
+        <PublicRoute>
+          <Login />
+        </PublicRoute>
+      ),
+    },
+    {
+      path: "/projects",
+      element: (
+        <PrivateRoute>
+          <ProjectsLayout />
+        </PrivateRoute>
+      ),
+      children: [
+        { index: true, element: <ProjectsList /> }, // /projects
+        { path: ":id", element: <ProjectDetails /> }, // /projects/:id
+      ],
+    },
 
-      <Route path="/projects">
-        <Route index element={<ProjectsList />} />
-        <Route path=":id" element={<ProjectDetails />} />
-      </Route>
-    </Routes>
-  );
+    {
+      path: "*",
+      element: <Navigate to="/login" replace />,
+    },
+  ];
+
+  return useRoutes(routes);
 }
 
 export default App;

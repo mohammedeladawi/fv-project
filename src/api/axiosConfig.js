@@ -7,9 +7,15 @@ const api = axios.create({
   },
 });
 
-api.interceptors.request.use((config) => {
-  console.log("Axios Request Headers:", config.headers);
-  return config;
-});
+api.interceptors.request.use(
+  (config) => {
+    // console.log("Axios Request Headers:", config.headers);
+    return config;
+  },
+  (error) => {
+    // ========= ToDo: Check if the token is valid with the backend ============
+    return Promise.reject(error);
+  }
+);
 
 export default api;
