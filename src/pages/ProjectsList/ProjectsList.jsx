@@ -1,25 +1,55 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import { ProjectsContext } from "../../context/ProjectsContext";
 import ProjectListItem from "./ProjectListItem";
 
 export default function ProjectsList() {
-  const { projects, fetchProjects } = useContext(ProjectsContext);
+  const { projects, fetchProjects, totalProjects } =
+    useContext(ProjectsContext);
+
+  const [skip, setSkip] = useState(0);
+  const [limit] = useState(3);
 
   useEffect(() => {
-    fetchProjects();
-  }, []);
+    fetchProjects(skip, limit);
+  }, [skip, limit]);
+
+  const handleNext = () => {
+    if (skip + limit < totalProjects) setSkip(skip + limit);
+  };
+
+  const handlePrev = () => {
+    if (skip - limit >= 0) setSkip(skip - limit);
+  };
 
   return (
     <Container>
       <Title>Projects List</Title>
 
       {projects && projects.length ? (
-        <List>
-          {projects.map((project) => (
-            <ProjectListItem project={project} />
-          ))}
-        </List>
+        <>
+          <List>
+            {projects.map((project) => (
+              <ProjectListItem key={project._id} project={project} />
+            ))}
+          </List>
+
+          <Pagination>
+            <button onClick={handlePrev} disabled={skip === 0}>
+              Prev
+            </button>
+            <span>
+              {skip + 1} - {Math.min(skip + limit, totalProjects)} of{" "}
+              {totalProjects}
+            </span>
+            <button
+              onClick={handleNext}
+              disabled={skip + limit >= totalProjects}
+            >
+              Next
+            </button>
+          </Pagination>
+        </>
       ) : (
         <ErrorMessage>There are no projects</ErrorMessage>
       )}
@@ -54,4 +84,30 @@ const ErrorMessage = styled.h3`
   color: #ef4444;
   margin-top: 20px;
   font-size: 18px;
+`;
+
+const Pagination = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+
+  & button {
+    padding: 6px 12px;
+    border: none;
+    background-color: #2563eb;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &:disabled {
+      background-color: #cbd5e1;
+      cursor: not-allowed;
+    }
+  }
+
+  & span {
+    font-weight: 500;
+    color: #374151;
+  }
 `;
