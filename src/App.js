@@ -7,13 +7,13 @@ import { AuthContext } from "./context/AuthContext";
 import ProjectsLayout from "./layouts/ProjectsLayout";
 
 const PrivateRoute = ({ children }) => {
-  const { token } = useContext(AuthContext);
-  return token ? children : <Navigate to="/login" replace />;
+  const { accessToken } = useContext(AuthContext);
+  return accessToken ? children : <Navigate to="/login" replace />;
 };
 
 const PublicRoute = ({ children }) => {
-  const { token } = useContext(AuthContext);
-  return token ? <Navigate to="/projects" replace /> : children;
+  const { accessToken } = useContext(AuthContext);
+  return accessToken ? <Navigate to="/projects" replace /> : children;
 };
 
 function App() {

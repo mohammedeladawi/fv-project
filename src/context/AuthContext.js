@@ -1,28 +1,44 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useCallback } from "react";
 import api from "../api/axiosConfig";
+import { useNavigate } from "react-router-dom";
 
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [token, setToken] = useState(null);
+  const [accessToken, setAccessToken] = useState(null);
+  const [refreshToken, setRefreshToken] = useState(null);
 
+  // Page Launched (first time)
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    if (storedToken) {
-      const parsedToken = JSON.parse(storedToken);
-      setToken(parsedToken);
-      api.defaults.headers.common["Authorization"] = `Bearer ${parsedToken}`;
+    restoreTokens();
+  }, []);
+
+  // Check localStorage
+  const restoreTokens = useCallback(() => {
+    const storedAccess = localStorage.getItem("accessToken");
+    const storedRefresh = localStorage.getItem("refreshToken");
+
+    if (storedRefresh) setRefreshToken(JSON.parse(storedRefresh));
+
+    if (storedAccess) {
+      setAccessToken(JSON.parse(storedAccess));
+      api.defaults.headers.common["Authorization"] = `Bearer ${JSON.parse(
+        storedAccess
+      )}`;
     }
   }, []);
 
   const login = async (email, password) => {
     try {
       const response = await api.post("/auth/sign-in", { email, password });
-      const userToken = response.data.data.accessToken;
+      const newAccessToken = response.data.data.accessToken;
+      const newRefreshToken = response.data.data.refreshToken;
 
-      setToken(userToken);
-      api.defaults.headers.common["Authorization"] = `Bearer ${userToken}`;
-      localStorage.setItem("token", JSON.stringify(userToken));
+      setAccessToken(newAccessToken);
+      setRefreshToken(newRefreshToken);
+
+      localStorage.setItem("accessToken", JSON.stringify(newAccessToken));
+      localStorage.setItem("refreshToken", JSON.stringify(newRefreshToken));
 
       return true;
     } catch (error) {
@@ -31,13 +47,16 @@ export function AuthProvider({ children }) {
   };
 
   const logout = () => {
-    setToken(null);
-    delete api.defaults.headers.common["Authorization"];
-    localStorage.removeItem("token");
+    setAccessToken(null);
+    setRefreshToken(null);
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
   };
 
   return (
-    <AuthContext.Provider value={{ token, login, logout }}>
+    <AuthContext.Provider
+      value={{ accessToken, refreshToken, restoreTokens, login, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );

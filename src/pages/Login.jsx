@@ -1,15 +1,19 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { AuthContext } from "../context/AuthContext";
 
 export default function Login() {
-  const { login } = useContext(AuthContext);
+  const { login, restoreTokens } = useContext(AuthContext);
 
   // ====== TDOO : remove email and password =========
   const [email, setEmail] = useState("owner@company1.com");
   const [password, setPassword] = useState("P@$$w0rd");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    restoreTokens();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

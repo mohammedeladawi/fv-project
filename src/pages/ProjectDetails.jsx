@@ -1,24 +1,33 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import styled from "styled-components";
 import api from "../api/axiosConfig";
+import { AuthContext } from "../context/AuthContext";
 
 const ProjectDetails = () => {
   const [project, setProject] = useState(null);
   const { id } = useParams();
+  const { accessToken, restoreTokens, logout } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchProject = async () => {
+      restoreTokens();
+
       try {
-        const response = await api.get(`/project/${id}`);
-        setProject(response.data.data); // assuming your API returns { data: { ...project } }
+        const response = await api.get(`/project/${id}`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        setProject(response.data.data);
       } catch (err) {
+        logout();
         console.error("Error fetching project:", err);
       }
     };
 
     fetchProject();
-  }, [id]);
+  }, []);
 
   if (!project) return <h2>Loading...</h2>;
 
