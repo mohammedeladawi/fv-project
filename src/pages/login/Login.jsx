@@ -9,7 +9,6 @@ export default function Login() {
   // ====== TDOO : remove email and password =========
   const [email, setEmail] = useState("owner@company1.com");
   const [password, setPassword] = useState("P@$$w0rd");
-  const navigate = useNavigate();
 
   useEffect(() => {
     restoreTokens();

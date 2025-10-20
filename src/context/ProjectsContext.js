@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useMemo, useState } from "react";
 import api from "../api/axiosConfig";
 import { AuthContext } from "./AuthContext";
 
@@ -29,9 +29,22 @@ export const ProjectsProvider = ({ children }) => {
     }
   };
 
+  const fetchProjectDetails = async (id) => {
+    restoreTokens();
+
+    try {
+      const response = await api.get(`/project/${id}`);
+      return response.data.data;
+    } catch (err) {
+      console.error("Error fetching project:", err);
+      logout();
+      return null;
+    }
+  };
+
   return (
     <ProjectsContext.Provider
-      value={{ projects, fetchProjects, totalProjects }}
+      value={{ projects, fetchProjects, totalProjects, fetchProjectDetails }}
     >
       {children}
     </ProjectsContext.Provider>

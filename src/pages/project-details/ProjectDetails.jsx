@@ -3,32 +3,22 @@ import { useParams, Link } from "react-router-dom";
 import styled from "styled-components";
 import api from "../../api/axiosConfig";
 import { AuthContext } from "../../context/AuthContext";
+import { ProjectsContext } from "../../context/ProjectsContext";
 
 const ProjectDetails = () => {
   const [project, setProject] = useState(null);
   const { id } = useParams();
-  const { accessToken, restoreTokens, logout } = useContext(AuthContext);
+  const { fetchProjectDetails } = useContext(ProjectsContext);
+  // const { accessToken, restoreTokens, logout } = useContext(AuthContext);
 
   useEffect(() => {
-    const fetchProject = async () => {
-      restoreTokens();
-
-      try {
-        const response = await api.get(`/project/${id}`, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-        setProject(response.data.data);
-      } catch (err) {
-        logout();
-        console.error("Error fetching project:", err);
-      }
+    const loadProject = async () => {
+      const project = await fetchProjectDetails(id);
+      setProject(project);
     };
 
-    fetchProject();
-  }, []);
-
+    loadProject();
+  }, [id, fetchProjectDetails]);
   if (!project) return <h2>Loading...</h2>;
 
   return (
