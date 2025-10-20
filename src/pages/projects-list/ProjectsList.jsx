@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import { ProjectsContext } from "../../context/ProjectsContext";
-import ProjectListItem from "./ProjectListItem";
+import ProjectListItem from "./components/ProjectListItem";
 
 export default function ProjectsList() {
   const { projects, fetchProjects, totalProjects } =

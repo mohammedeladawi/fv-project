@@ -1,5 +1,4 @@
 import axios from "axios";
-import { history } from "../history/history";
 const baseURL = "https://v-consult.api-fv.com/api";
 
 const api = axios.create({
@@ -43,10 +42,11 @@ api.interceptors.response.use(
     const errorCode = error.response?.data?.code;
 
     if (errorCode === "0622" && !originalRequest._retry) {
-      originalRequest._retry = true; // ⚡ important
+      originalRequest._retry = true; // no infinite loop
 
       const newAccessToken = await getNewAccessTokenUsingRefreshToken();
       if (newAccessToken) {
+        // Make request ready and send it
         localStorage.setItem("accessToken", JSON.stringify(newAccessToken));
         originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
         return api(originalRequest); // retry original request

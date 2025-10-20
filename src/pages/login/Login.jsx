@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { AuthContext } from "../context/AuthContext";
+import { AuthContext } from "../../context/AuthContext";
 
 export default function Login() {
   const { login, restoreTokens } = useContext(AuthContext);
@@ -24,7 +24,7 @@ export default function Login() {
       alert("Login successful!");
 
       // Go to the main page
-      navigate("/projects", { replace: true });
+      // navigate("/projects", { replace: true });
     } else {
       alert("Invalid email or password");
     }

@@ -1,8 +1,8 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import styled from "styled-components";
-import api from "../api/axiosConfig";
-import { AuthContext } from "../context/AuthContext";
+import api from "../../api/axiosConfig";
+import { AuthContext } from "../../context/AuthContext";
 
 const ProjectDetails = () => {
   const [project, setProject] = useState(null);

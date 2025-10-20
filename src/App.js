@@ -1,7 +1,7 @@
-import { Navigate, Route, Routes, useRoutes } from "react-router-dom";
-import Login from "./pages/Login";
-import ProjectsList from "./pages/ProjectsList/ProjectsList";
-import ProjectDetails from "./pages/ProjectDetails";
+import { Navigate, useRoutes } from "react-router-dom";
+import Login from "./pages/login/Login";
+import ProjectsList from "./pages/projects-list/ProjectsList";
+import ProjectDetails from "./pages/project-details/ProjectDetails";
 import { useContext } from "react";
 import { AuthContext } from "./context/AuthContext";
 import ProjectsLayout from "./layouts/ProjectsLayout";
