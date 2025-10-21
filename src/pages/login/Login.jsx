@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { AuthContext } from "../../context/AuthContext";
@@ -14,6 +14,7 @@ export default function Login() {
     restoreTokens();
   }, []);
 
+  // ======== Todo: Add useCallback ===========
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -21,9 +22,7 @@ export default function Login() {
 
     if (isLoggedIn) {
       alert("Login successful!");
-
-      // Go to the main page
-      // navigate("/projects", { replace: true });
+      // route gurads will replace the page automatically
     } else {
       alert("Invalid email or password");
     }

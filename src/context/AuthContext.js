@@ -1,24 +1,25 @@
 import { createContext, useState, useEffect, useCallback } from "react";
 import api from "../api/axiosConfig";
-import { useNavigate } from "react-router-dom";
+import { removeTokensFromLocalStorage } from "../utils/reusableFunctions";
 
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [accessToken, setAccessToken] = useState(null);
-  const [refreshToken, setRefreshToken] = useState(null);
-
-  // Page Launched (first time)
-  useEffect(() => {
-    restoreTokens();
-  }, []);
+  const [accessToken, setAccessToken] = useState(
+    () => localStorage.getItem("accessToken") || null
+  );
+  const [refreshToken, setRefreshToken] = useState(
+    () => localStorage.getItem("refreshToken") || null
+  );
 
   // Check localStorage
   const restoreTokens = useCallback(() => {
     const storedAccess = localStorage.getItem("accessToken");
     const storedRefresh = localStorage.getItem("refreshToken");
 
-    if (storedRefresh) setRefreshToken(JSON.parse(storedRefresh));
+    if (storedRefresh !== refreshToken) {
+      setRefreshToken(JSON.parse(storedRefresh));
+    }
 
     if (storedAccess) {
       setAccessToken(JSON.parse(storedAccess));
@@ -26,9 +27,9 @@ export function AuthProvider({ children }) {
         storedAccess
       )}`;
     }
-  }, []);
+  }, [refreshToken]);
 
-  const login = async (email, password) => {
+  const login = useCallback(async (email, password) => {
     try {
       const response = await api.post("/auth/sign-in", { email, password });
       const newAccessToken = response.data.data.accessToken;
@@ -44,14 +45,13 @@ export function AuthProvider({ children }) {
     } catch (error) {
       return false;
     }
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     setAccessToken(null);
     setRefreshToken(null);
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-  };
+    removeTokensFromLocalStorage();
+  }, []);
 
   return (
     <AuthContext.Provider

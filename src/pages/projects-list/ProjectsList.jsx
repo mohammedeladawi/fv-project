@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import { ProjectsContext } from "../../context/ProjectsContext";
 import ProjectListItem from "./components/ProjectListItem";
@@ -14,13 +14,13 @@ export default function ProjectsList() {
     fetchProjects(skip, limit);
   }, [skip, limit]);
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (skip + limit < totalProjects) setSkip(skip + limit);
-  };
+  }, [skip, limit, totalProjects]);
 
-  const handlePrev = () => {
+  const handlePrev = useCallback(() => {
     if (skip - limit >= 0) setSkip(skip - limit);
-  };
+  }, [skip, limit]);
 
   return (
     <Container>

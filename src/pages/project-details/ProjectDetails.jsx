@@ -1,15 +1,12 @@
-import { useContext, useEffect, useState } from "react";
+import { memo, useContext, useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import styled from "styled-components";
-import api from "../../api/axiosConfig";
-import { AuthContext } from "../../context/AuthContext";
 import { ProjectsContext } from "../../context/ProjectsContext";
 
 const ProjectDetails = () => {
   const [project, setProject] = useState(null);
   const { id } = useParams();
   const { fetchProjectDetails } = useContext(ProjectsContext);
-  // const { accessToken, restoreTokens, logout } = useContext(AuthContext);
 
   useEffect(() => {
     const loadProject = async () => {
@@ -19,6 +16,8 @@ const ProjectDetails = () => {
 
     loadProject();
   }, [id, fetchProjectDetails]);
+
+  console.log("PROJECT D");
   if (!project) return <h2>Loading...</h2>;
 
   return (
